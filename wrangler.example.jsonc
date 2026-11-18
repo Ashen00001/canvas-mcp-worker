@@ -1,0 +1,24 @@
+// Template only. `node scripts/setup.mjs init ...` writes the real wrangler.jsonc (gitignored) for you.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "canvas-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "vars": {
+    // Public URL of this server + /mcp. Every OAuth token is bound to it.
+    "MCP_RESOURCE": "https://canvas-mcp.YOUR-SUBDOMAIN.workers.dev/mcp",
+    // Your school's Canvas address, no trailing slash.
+    "CANVAS_BASE_URL": "https://YOUR-SCHOOL.instructure.com",
+    // GitHub usernames allowed to sign in, comma-separated. Everyone else is refused.
+    "ALLOWED_GITHUB_USERS": "your-github-username"
+  },
+  "kv_namespaces": [{ "binding": "OAUTH_KV", "id": "<created by setup>" }],
+  "observability": { "enabled": true },
+  "dev": { "port": 8788 },
+  "secrets": {
+    "required": ["COOKIE_ENCRYPTION_KEY", "GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "CANVAS_API_TOKEN"]
+  }
+}

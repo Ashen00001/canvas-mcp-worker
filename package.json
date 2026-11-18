@@ -1,0 +1,36 @@
+{
+	"name": "canvas-mcp-worker",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"setup": "node scripts/setup.mjs",
+		"status": "node scripts/setup.mjs status",
+		"deploy": "node scripts/setup.mjs deploy",
+		"secret": "node scripts/set-secret.mjs",
+		"e2e": "node scripts/e2e.mjs",
+		"dev": "wrangler dev",
+		"test": "tsx test/tools.test.mts",
+		"type-check": "tsc --noEmit",
+		"cf-typegen": "wrangler types -c wrangler.example.jsonc --strict-vars=false"
+	},
+	"dependencies": {
+		"@cloudflare/workers-oauth-provider": "^1.2.4",
+		"@modelcontextprotocol/server": "2.3.1",
+		"agents": "^0.29.0",
+		"hono": "^4.12.27",
+		"just-pick": "^4.2.0",
+		"octokit": "^5.0.5",
+		"zod": "^4.4.3"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^5.20261110.1",
+		"tsx": "^4.23.15",
+		"typescript": "6.0.3",
+		"wrangler": "^4.105.0"
+	},
+	"description": "Read-only Canvas LMS MCP server on Cloudflare Workers, behind GitHub OAuth, for use as a claude.ai custom connector.",
+	"license": "MIT",
+	"engines": {
+		"node": ">=20"
+	}
+}
