@@ -1,6 +1,6 @@
 # canvas mcp
 
-lets claude see your canvas. you ask it stuff like "what am i missing?" or "what's my grade in chem?" and it checks canvas for you, from your phone or computer, even when your own pc is off.
+lets your ai see your canvas. works with claude.ai or any other ai app that lets you add a custom mcp connector. you ask it stuff like "what am i missing?" or "what's my grade in chem?" and it checks canvas for you, from your phone or computer, even when your own pc is off.
 
 it can only **look**. it can't submit, edit, or delete anything in canvas. and only the github account(s) you pick can use it, so nobody else can see your grades.
 
@@ -13,18 +13,18 @@ it runs for free on cloudflare (the free plan is way more than enough).
 - a **canvas** login (your school's canvas, like `yourschool.instructure.com`)
 - a **github** account (free, it's just used to sign in)
 - a **cloudflare** account (free, make one at dash.cloudflare.com)
-- a **claude.ai** account that can add custom connectors
+- an **ai app that can add custom mcp connectors** (tested with claude.ai, web and phone)
 - a computer with **node.js** installed (nodejs.org, the LTS one) for the setup. after setup you don't need the computer anymore
 
 it takes about 20 minutes the first time.
 
 ---
 
-## easiest way: let an ai do it
+## easiest way: let an ai agent do it
 
-if you have claude code (or another coding agent):
+any coding agent that can run commands on your computer works: claude code, codex, cursor, gemini cli, copilot, whatever you use.
 
-1. download this repo and open the folder in claude code
+1. download this repo and open the folder in your agent
 2. say: **"set this up for me, follow AGENTS.md"**
 3. it does everything it can by itself. it'll stop and ask you when it needs you, which is only for:
    - logging into cloudflare (a browser tab opens, you click allow)
@@ -32,7 +32,7 @@ if you have claude code (or another coding agent):
    - pasting 3 secret codes into a box it opens for you (it never sees them)
    - clicking "approve" and "authorize" once at the end to test it
 
-that's it. skip to [add it to claude](#add-it-to-claude) when it says it's done.
+that's it. skip to [add it to your ai app](#add-it-to-your-ai-app) when it says it's done.
 
 ---
 
@@ -105,11 +105,15 @@ the script checks the canvas token with canvas before saving it, so if you paste
 node scripts/setup.mjs deploy
 ```
 
-it uploads it and checks it's working. it prints the url to use in claude.
+it uploads it and checks it's working. it prints the url to give your ai app.
 
 ---
 
-## add it to claude
+## add it to your ai app
+
+you're adding a "remote mcp server" (some apps call it a custom connector or integration). the url is your server address with `/mcp` on the end, and it signs in with oauth.
+
+### claude.ai (tested)
 
 do this once, on the claude.ai website on a computer. your phone picks it up automatically.
 
@@ -121,6 +125,16 @@ do this once, on the claude.ai website on a computer. your phone picks it up aut
 6. github asks to authorize → click **authorize**
 
 then in any chat (phone too), open the tools / **+** menu and make sure **Canvas** is turned on. try "what's due this week?"
+
+### other apps
+
+look for something like "add mcp server", "custom connector" or "integrations" in its settings. give it:
+
+- the url ending in `/mcp`
+- auth: oauth (if it asks about client registration, pick automatic / dynamic)
+- transport: streamable http (not sse)
+
+then sign in the same way: **approve**, then **authorize** on github. if your app can only do api keys and not oauth, it won't work with this.
 
 ---
 

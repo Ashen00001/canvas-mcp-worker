@@ -1,10 +1,16 @@
 # AGENTS.md: setup and maintenance handoff
 
-You are setting up (or maintaining) a **read-only Canvas LMS MCP server** on **Cloudflare Workers**, protected by **GitHub OAuth**, for one person to use as a **claude.ai custom connector** (web + phone). The person is probably **not technical**. Do as much as you can yourself, stop only at the human-gated steps below, and explain those in plain words.
+You are setting up (or maintaining) a **read-only Canvas LMS MCP server** on **Cloudflare Workers**, protected by **GitHub OAuth**, for one person to use from their **AI app as a remote MCP connector** (tested with claude.ai web and mobile; any MCP client that supports remote servers with OAuth + dynamic client registration over Streamable HTTP should work). The person is probably **not technical**.
 
-Your job is done when `node scripts/setup.mjs deploy` prints `DEPLOY_OK`, the person has added the connector in claude.ai, and one real question (e.g. "what's due this week?") works. `node scripts/e2e.mjs` printing `E2E_OK` also counts.
+These instructions are for any coding agent (Claude Code, Codex, Cursor, Gemini CLI, Copilot, etc.). Nothing here depends on a specific agent. Do as much as you can yourself, stop only at the human-gated steps below, and explain those in plain words.
+
+Your job is done when `node scripts/setup.mjs deploy` prints `DEPLOY_OK`, the person has added the connector in their AI app, and one real question (e.g. "what's due this week?") works. `node scripts/e2e.mjs` printing `E2E_OK` also counts.
 
 ---
+
+## If you can't run things on the person's computer
+
+Some agents run in the cloud or a sandbox. Then you can't open browser tabs or windows for the person. Give them the exact commands from this runbook to paste into a terminal in the repo folder, one step at a time, and have them tell you what each one printed. The `[x]` / `NEEDS A HUMAN:` / `SETUP_RESULT` / `DEPLOY_OK` lines are made to be easy to read back.
 
 ## Hard rules
 
@@ -126,9 +132,11 @@ Either:
 - `node scripts/e2e.mjs`: opens the sign-in page in the default browser. The person clicks **Approve**, then **Authorize** on GitHub. Prints counts per tool and `E2E_OK`. Don't report the person's actual grades unless they ask.
 - Or skip straight to step 8 and ask a real question.
 
-### 8. Add to claude.ai (human)
+### 8. Add it to the person's AI app (human)
 
-claude.ai (web) → Settings → Connectors → **Add custom connector**:
+What any client needs: the URL from `DEPLOY_OK` (ends in `/mcp`), OAuth auth with **dynamic client registration** (RFC 7591, endpoint `/register`), **Streamable HTTP** transport. Discovery works from the 401's `WWW-Authenticate: resource_metadata=...` header. Clients that only support static API keys or SSE won't work.
+
+**claude.ai (tested)**: Settings → Connectors → **Add custom connector**:
 
 - Name: anything (e.g. `Canvas`)
 - URL: `connector_url` from `DEPLOY_OK`. **Must end in `/mcp`.**
@@ -136,6 +144,8 @@ claude.ai (web) → Settings → Connectors → **Add custom connector**:
 - Connect → Approve → Authorize.
 
 On the phone, it syncs automatically; the person toggles it on in a chat's tools menu.
+
+**Other apps**: find their "add MCP server / custom connector / integration" setting and give the same three things. Walk the person through it if you can't see their screen.
 
 ---
 
@@ -151,7 +161,7 @@ Live logs: `npx wrangler tail <name> --format json`. Each event is **multi-line 
 |---|---|
 | Tool returns "Canvas token is invalid or expired" | `CANVAS_API_TOKEN` is wrong/expired/deleted. Human makes a new one, sets it via the prompt. No redeploy needed. |
 | GitHub sign-in ends at "This server is private." (403) | Signed-in GitHub user isn't in `ALLOWED_GITHUB_USERS`. Fix the var (rerun `init` with the right `--github-user`) and `deploy`. |
-| claude.ai connector "failed to connect" | URL missing `/mcp`; or `MCP_RESOURCE` doesn't match the real host (the protected-resource metadata then 404s; it's served at the path derived from `MCP_RESOURCE`, on that exact host). Run `status`. |
+| AI app says the connector "failed to connect" | URL missing `/mcp`; or `MCP_RESOURCE` doesn't match the real host (the protected-resource metadata then 404s; it's served at the path derived from `MCP_RESOURCE`, on that exact host). Run `status`. |
 | `POST /mcp -> canceled` in tail with **no** `canvas START` | Harmless: the client closed a streamed response. |
 | `canceled` **after** `canvas START` with no matching status line | Canvas was slow/hung. The 15s per-request timeout returns a readable error instead. |
 | GitHub callback error / "redirect_uri mismatch" | OAuth App callback URL must be exactly `<url>/callback`. |

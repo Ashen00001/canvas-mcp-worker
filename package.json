@@ -28,7 +28,7 @@
 		"typescript": "6.0.3",
 		"wrangler": "^4.105.0"
 	},
-	"description": "Read-only Canvas LMS MCP server on Cloudflare Workers, behind GitHub OAuth, for use as a claude.ai custom connector.",
+	"description": "Read-only Canvas LMS MCP server on Cloudflare Workers behind GitHub OAuth. Works as a remote MCP connector for claude.ai and other MCP clients.",
 	"license": "MIT",
 	"engines": {
 		"node": ">=20"

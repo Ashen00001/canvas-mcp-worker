@@ -139,12 +139,13 @@ async function deploy() {
 	const reg = await fetch(`${base}/register`, {
 		method: "POST",
 		headers: { "content-type": "application/json" },
-		body: JSON.stringify({ redirect_uris: ["https://claude.ai/api/mcp/auth_callback"], client_name: "setup smoke test", token_endpoint_auth_method: "none" }),
+		body: JSON.stringify({ redirect_uris: ["https://example.com/oauth/callback"], client_name: "setup smoke test", token_endpoint_auth_method: "none" }),
 	});
 	step(reg.status === 201 || reg.status === 200, `dynamic client registration works (${reg.status})`);
 	if (r1.status !== 401 || prm.resource !== mcp) fail("Smoke test failed, see the unchecked lines above.");
 	console.log(`\nDEPLOY_OK ${JSON.stringify({ connector_url: mcp })}
-Add it in claude.ai: Settings > Connectors > Add custom connector, URL ${mcp}
+Add it to your AI app as a remote MCP server / custom connector with this URL (OAuth, Streamable HTTP): ${mcp}
+  claude.ai: Settings > Connectors > Add custom connector
 Optional full test with real Canvas data: node scripts/e2e.mjs`);
 }
 
